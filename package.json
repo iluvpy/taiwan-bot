@@ -1,0 +1,14 @@
+{
+  "name": "taiwan-bot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "node ./src/bot.mjs",
+    "dev": "nodemon ./src/bot.mjs"
+  },
+  "dependencies": {
+    "discord.js": "^13.4.0",
+    "nodemon": "^2.0.15"
+  }
+}
