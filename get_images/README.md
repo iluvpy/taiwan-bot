@@ -1,5 +1,5 @@
-## links
-this gets image links from a google search
+## get images
+gets images from a google search
 
 ## usage
 first create a python env and install everything with `pip install -r requirements`

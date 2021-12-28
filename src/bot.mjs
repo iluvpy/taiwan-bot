@@ -1,6 +1,6 @@
-import {Client, Intents} from 'discord.js';
-import { randomCredit } from './util.mjs';
-
+import {Client, Intents, MessageEmbed} from 'discord.js';
+import { getBadEmbed, getGoodEmbed, getRandomEmbed ,randomChoice, randomCredit, readCreditData, readImages, saveCreditData } from './util.mjs';
+import fs from 'fs';
 
 
 // Create a new client instance
@@ -11,8 +11,11 @@ const client = new Client({ intents: [
 ] });
 // add your own env variable
 const TOKEN = process.env.DISCORD_BOT_TOKEN;
-const PREFIX = "!taiwan";
-var creditData = {};
+const PREFIX = '!t';
+const BAD_USER = '347298242653978624';
+
+var creditData = readCreditData();
+
 
 // When the client is ready, run this code (only once)
 client.once('ready', () => {
@@ -24,25 +27,25 @@ client.on('messageCreate', (message) => {
     const content = message.content;
     const id = message.author.id;
     if (content.startsWith(PREFIX)) {
-        const args = content.substring(PREFIX.length).split(" ");
+        const args = content.substring(PREFIX.length).split(' ');
         if (args.length <= 1) {
-            message.reply('puoi registrarti e recivere 1000 social credit con "!taiwan social", puoi vedere i tuoi social credit con "!taiwan credit"');
+            message.reply('puoi registrarti e recivere 1000 social credit con \'!taiwan social\', puoi vedere i tuoi social credit con \'!taiwan credit\'');
         }   
         else if (args[1] === 'social') {
             if (id in creditData) {
-                message.reply('sei già registrato!');
+                message.channel.send(getGoodEmbed('sei gia registrato'));
             } 
             else {
                 creditData[id] = 1000;
-                message.reply('sei stato registrato con 1000 social credit');
+                message.channel.send(getGoodEmbed('sei stato registrato con 1000 social credit'));
             }
         }
         else if (args[1] === 'credit') {
             if (id in creditData) {
-                message.reply(`${creditData[id]}`);
+                message.channel.send(`${creditData[id]}`);
             } 
             else {
-                message.reply("non sei ancora registrato");
+                message.channel.send(getBadEmbed('non sei ancora registrato'));
             }
         }
         
@@ -52,10 +55,25 @@ client.on('messageCreate', (message) => {
         if (id in creditData) {
             const penalty = randomCredit();
             creditData[id] -= penalty;
-            message.reply(`-${penalty} social credit`);
+            message.channel.send(getBadEmbed(`-${penalty} social credit`));
         }
+    } 
+    else if (message.mentions.has(BAD_USER)) {
+        const penalty = randomCredit();
+        creditData[id] -= penalty;
+        message.channel.send(getBadEmbed(`-${penalty} social credit`));
     }
 });
 
 // Login to Discord with your client's token
 client.login(TOKEN);
+
+// save credit data every 10 seconds
+(async function main() {
+    for (;;) {
+        await new Promise(res => {
+            setTimeout(res, 10000);
+        });
+        saveCreditData(creditData);
+    }
+})();
