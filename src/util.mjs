@@ -9,5 +9,14 @@ function getRandomInt(min, max) {
 
 function randomCredit() {
     const random = getRandomInt(5, 150);
-    const 
+    const front = parseInt(random / 10) * 10;
+    const difference = random-front;
+    if (difference > 2.5) {
+        return random + 5 - difference;
+    } 
+    else {
+        return random - 5 - difference;
+    }
 }
+
+export {randomCredit};

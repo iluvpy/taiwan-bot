@@ -1,4 +1,5 @@
 import {Client, Intents} from 'discord.js';
+import { randomCredit } from './util.mjs';
 
 
 
@@ -49,8 +50,9 @@ client.on('messageCreate', (message) => {
 
     else if (content.includes('taiwan')) {
         if (id in creditData) {
-            creditData[id] -= 100;
-            message.reply('-100 social credit');
+            const penalty = randomCredit();
+            creditData[id] -= penalty;
+            message.reply(`-${penalty} social credit`);
         }
     }
 });
