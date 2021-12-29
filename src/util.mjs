@@ -1,6 +1,8 @@
 import fs from 'fs';
 import { MessageEmbed } from 'discord.js';
 
+const CREDIT_DATA_PATH = './data/creditData.json';
+const SEARCH_DATA_PATH = './data/searches.json';
 var BAD_IMAGES = readImages('./data/bad/images.json');
 var GOOD_IMAGES = readImages('./data/good/images.json');
 var RANDOM_IMAGES = readImages('./data/random/images.json');
@@ -27,7 +29,7 @@ function randomCredit() {
 
 function readImages(json_path) {
     const imageLinks = [];
-    fs.readFile('./data/bad/images.json', 'utf8' , (err, data) => {
+    fs.readFile(json_path, 'utf8' , (err, data) => {
         if (err) {
           console.error(err)
           return
@@ -65,28 +67,47 @@ function getRandomEmbed(text) {
     return { embeds: [getEmbed(text, 'RANDOM', RANDOM_IMAGES)]}
 }
 
-function saveCreditData(data) {
+function saveData(data, path) {
     const string = JSON.stringify(data);
-    fs.writeFile('./data/creditData.json', string, (err) => {
+    fs.writeFile(path, string, (err) => {
         if (err) {
             console.log(err);
             return;
         }
-        console.log('saved Credit Data');
     });
 }
 
-function readCreditData() {
-    var creditData = {};
-    fs.readFile('./data/creditData.json', 'utf8' , (err, data) => {
-        if (err) {
-            console.log(err);
-            return;
-        }
-        creditData = JSON.parse(data); 
-    });
-    return creditData;
+function readData(path) {
+    var objData = {};
+    const data = fs.readFileSync(path);
+    objData = JSON.parse(data); 
+    return objData;
 }
+
+function saveCreditData(data) {
+    saveData(data, CREDIT_DATA_PATH);
+}
+
+function saveSearchData(data) {
+    saveData(data, SEARCH_DATA_PATH);
+}
+
+function readCreditData() {
+    return readData(CREDIT_DATA_PATH);
+}
+
+function readSearchData() {
+    return readData(SEARCH_DATA_PATH);
+}
+
+function hasMention(message) {
+    return message.mentions.members.size > 0;
+}
+
+function containsTaiwan(text) {
+    return text.toLowerCase().includes('taiwan');
+}
+
 
 
 export {
@@ -96,6 +117,11 @@ export {
     getBadEmbed,
     getGoodEmbed,
     getRandomEmbed,
+    getEmbed,
     saveCreditData,
-    readCreditData
+    saveSearchData,
+    readCreditData,
+    readSearchData,
+    hasMention,
+    containsTaiwan
 };
